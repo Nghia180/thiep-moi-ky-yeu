@@ -1,100 +1,183 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thiệp mời kỷ yếu</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #1d2671, #c33764);
-    }
-    .card {
-      width: 360px;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-      overflow: hidden;
-      text-align: center;
-      animation: float 4s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    .header {
-      background: linear-gradient(135deg, #ffb347, #ffcc33);
-      padding: 28px 16px;
-      color: #2c2c2c;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      letter-spacing: 1px;
-    }
-    .image {
-      width: 100%;
-      height: 200px;
-      background: radial-gradient(circle at top, #fbc2eb, #a6c1ee);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 72px;
-    }
-    .content {
-      padding: 20px;
-    }
-    .content h2 {
-      margin: 8px 0 12px;
-      font-size: 20px;
-    }
-    .content p {
-      margin: 6px 0;
-      font-size: 15px;
-      color: #444;
-    }
-    .btn {
-      margin-top: 16px;
-      display: inline-block;
-      padding: 10px 22px;
-      background: #1d2671;
-      color: #fff;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-    }
-    footer {
-      padding: 10px;
-      font-size: 12px;
-      color: #777;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ký Ức Thanh Xuân</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  transition:background 1.2s ease;
+}
+
+canvas{position:absolute;inset:0;z-index:0}
+
+.card{
+  z-index:2;
+  width:90%;
+  max-width:420px;
+  padding:40px 26px;
+  text-align:center;
+  border-radius:22px;
+  background:rgba(255,255,255,.15);
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 40px rgba(255,255,255,.35);
+  animation:float 5s ease-in-out infinite;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+h1{font-size:28px;margin-bottom:14px;text-shadow:0 0 16px #fff}
+p{opacity:.9;line-height:1.6}
+
+button{
+  margin-top:22px;
+  border:none;
+  padding:14px 32px;
+  font-size:17px;
+  font-weight:700;
+  border-radius:40px;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,#ffdd00,#ff0080,#00e5ff);
+  background-size:300% 300%;
+  animation:glow 3s infinite alternate;
+  box-shadow:0 0 22px rgba(255,255,255,.8);
+}
+@keyframes glow{
+  0%{background-position:0%}
+  100%{background-position:100%}
+}
+
+.flash{
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+  pointer-events:none;
+  z-index:5;
+}
+.flash.show{
+  animation:flash .5s ease;
+}
+@keyframes flash{
+  0%{opacity:.8}
+  100%{opacity:0}
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="header">
-      <h1>THIỆP MỜI KỶ YẾU</h1>
-    </div>
-    <div class="image">🎓</div>
-    <div class="content">
-      <h2>Buổi chụp kỷ yếu của bạn Nghĩa</h2>
-      <p><strong>Thời gian:</strong> 10h00 – 11h30 (20/05/2026)</p>
-      <p><strong>Địa điểm:</strong> Trường THPT Ninh Bình, Bạc Liêu</p>
-      <p>Trân trọng kính mời bạn tham dự để cùng lưu giữ những khoảnh khắc cuối cùng của tuổi học trò.</p>
-    </div>
-    <footer>
-      © 2026 | Kỷ yếu lớp 12
-    </footer>
-  </div>
+
+<canvas id="fx"></canvas>
+<div class="flash" id="flash"></div>
+
+<div class="card">
+  <h1 id="title">🎓 KỶ YẾU THANH XUÂN 🎓</h1>
+  <p id="text">
+    Có những ngày bình thường,<br>
+    sau này nghĩ lại lại thấy rất đẹp.
+  </p>
+  <button onclick="join()">THAM GIA ✨</button>
+</div>
+
+<script>
+const memories=[
+{
+ bg:"linear-gradient(120deg,#1d2671,#c33764)",
+ title:"🎓 KỶ YẾU THANH XUÂN 🎓",
+ text:"Có những ngày bình thường,<br>sau này nghĩ lại lại thấy rất đẹp."
+},
+{
+ bg:"linear-gradient(120deg,#000428,#004e92)",
+ title:"🌙 KÝ ỨC ĐÊM CUỐI 🌙",
+ text:"Ánh đèn cuối ngày,<br>tiếng cười vẫn còn vang đâu đây."
+},
+{
+ bg:"linear-gradient(120deg,#ff512f,#dd2476)",
+ title:"🔥 TUỔI TRẺ BÙNG CHÁY 🔥",
+ text:"Chúng ta đã từng rực rỡ,<br>và điều đó là thật."
+},
+{
+ bg:"linear-gradient(120deg,#11998e,#38ef7d)",
+ title:"🍃 MÙA HẠ CUỐI 🍃",
+ text:"Thanh xuân trôi nhanh như gió,<br>chỉ ký ức là ở lại."
+}
+]
+
+let index=0
+const body=document.body
+const title=document.getElementById('title')
+const text=document.getElementById('text')
+const flash=document.getElementById('flash')
+
+function changeMemory(){
+  index=(index+1)%memories.length
+  body.style.background=memories[index].bg
+  title.innerHTML=memories[index].title
+  text.innerHTML=memories[index].text
+  flash.classList.add('show')
+  setTimeout(()=>flash.classList.remove('show'),400)
+}
+
+body.style.background=memories[0].bg
+document.addEventListener('click',e=>{
+  if(e.target.tagName!=="BUTTON") changeMemory()
+})
+
+/* BLING BLING PARTICLE */
+const canvas=document.getElementById('fx')
+const ctx=canvas.getContext('2d')
+let w,h,particles=[]
+function resize(){w=canvas.width=innerWidth;h=canvas.height=innerHeight}
+window.onresize=resize;resize()
+
+class P{
+ constructor(x,y){
+  this.x=x;this.y=y
+  this.vx=(Math.random()-.5)*6
+  this.vy=(Math.random()-.5)*6
+  this.life=60
+  this.color=`hsl(${Math.random()*360},100%,70%)`
+ }
+ draw(){
+  ctx.fillStyle=this.color
+  ctx.beginPath()
+  ctx.arc(this.x,this.y,2,0,Math.PI*2)
+  ctx.fill()
+ }
+ update(){
+  this.x+=this.vx
+  this.y+=this.vy
+  this.life--
+ }
+}
+
+document.addEventListener('click',e=>{
+ for(let i=0;i<40;i++)particles.push(new P(e.clientX,e.clientY))
+})
+
+function loop(){
+ ctx.clearRect(0,0,w,h)
+ particles=particles.filter(p=>p.life>0)
+ particles.forEach(p=>{p.update();p.draw()})
+ requestAnimationFrame(loop)
+}
+loop()
+
+function join(){
+ alert("💖 Cảm ơn bạn đã tham gia kỷ yếu 💖")
+}
+</script>
+
 </body>
 </html>
